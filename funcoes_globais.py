@@ -132,13 +132,14 @@ def load_contratos_table(connection, cursor,df):
         i = 1
         for _, linha in df.iterrows():
             cursor.execute(
-                "INSERT INTO contratos (data, objeto, segmento_id, fornecedor_id, valor) VALUES (%s, %s, %s, %s, %s) ON CONFLICT (fornecedor_id, data, valor, objeto) DO NOTHING",
+                "INSERT INTO contratos (data, objeto, segmento_id, fornecedor_id, valor, fonte_id) VALUES (%s, %s, %s, %s, %s, %s) ON CONFLICT (fornecedor_id, data, valor, objeto) DO NOTHING",
                 (
                     linha['data'],
                     linha['objeto'],
                     None if pd.isna(linha['segmento_id']) else linha['segmento_id'],
                     linha['fornecedor_id'],
                     linha['valor'],
+                    linha['fonte_id']
                 )
             )
             print(f'contrato {i} processado')
@@ -158,6 +159,10 @@ def get_arquivo_recente(fonte):
         return int(match.group(1)) if match else -1
     if fonte.upper() == 'BNDES':
         pattern = '../BNDES/dados/contratos_bndes_V*.csv'
+        reader = pd.read_csv
+        extension = '.csv'
+    elif fonte.upper() == 'ONU':
+        pattern = '../ONU/dados/contratos_bndes_V*.csv'
         reader = pd.read_csv
         extension = '.csv'
     elif fonte.upper() == 'IADB':
