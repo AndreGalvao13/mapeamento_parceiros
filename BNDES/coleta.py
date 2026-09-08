@@ -11,7 +11,7 @@ URL = 'https://www.bndes.gov.br/wps/portal/site/home/transparencia/desestatizaca
 DATA_INICIAL = '2017-01-01'
 DATA_FINAL = str(date.today())
 #MUDE SEMPRE A VERSAO PARA NAO PERDER OS DADOS HISTORICOS
-CSV_SAIDA = '..BNDES/dados/contratos_bndes_V02.csv'
+CSV_SAIDA = '../BNDES/dados/contratos_bndes_V02.csv'
 
 JS_CONTAR_LINHAS = """
     const host = document.querySelector('bndes-data-search-desestat');

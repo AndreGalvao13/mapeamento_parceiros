@@ -23,3 +23,8 @@ CREATE TABLE contratos(
     fornecedor_id INT NOT NULL references fornecedores(id),
     valor NUMERIC(18,2) NOT NULL 
 );
+
+CREATE TABLE fontes(
+    id SERIAL PRIMARY KEY,
+    nome TEXT UNIQUE NOT NULL,
+);

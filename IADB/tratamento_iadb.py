@@ -47,6 +47,7 @@ df_concatenado = df_concatenado.rename(columns={'id' : 'fornecedor_id','segmento
 colunas_para_manter_concatenado = ['data', 'objeto', 'segmento_id','fornecedor_id','valor']
 df_concatenado = df_concatenado[colunas_para_manter_concatenado]
 df_concatenado['segmento_id'] = None
+df_concatenado['fonte_id'] = 2
 
 fg.load_contratos_table(connection, cursor, df_concatenado)
 fg.end_db_connection(cursor, connection)
