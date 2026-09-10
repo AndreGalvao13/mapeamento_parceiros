@@ -12,12 +12,12 @@ cursor = fg.get_cursor(connection)
 engine = fg.get_engine()
 df = fg.get_arquivo_recente('BNDES')
 
-colunas_para_manter = ['Empresa', 'Objeto', 'Data de assinatura', 'Valor Estimado por empresa (R$)']
+colunas_para_manter = ['N˚ do contrato', 'Empresa', 'Objeto', 'Data de assinatura', 'Valor Estimado por empresa (R$)']
 df_filtrado = df[colunas_para_manter].copy()
 df_filtrado['segmento'] = ""
-renomear = {'Empresa' : 'nome', 'Objeto' : 'objeto', 'Data de assinatura' : 'data', 'Valor Estimado por empresa (R$)' : 'valor'}
+renomear = {'N˚ do contrato' : 'codigo', 'Empresa' : 'nome', 'Objeto' : 'objeto', 'Data de assinatura' : 'data', 'Valor Estimado por empresa (R$)' : 'valor'}
 df_filtrado = df_filtrado.rename(columns=renomear).copy()
-nova_ordem = ['data','objeto', 'segmento', 'nome', 'valor']
+nova_ordem = ['codigo', 'data','objeto', 'segmento', 'nome', 'valor']
 df_filtrado = df_filtrado[nova_ordem]
 df_filtrado['valor'] = df_filtrado['valor'].str.replace('.', '',regex = False)
 df_filtrado['valor'] = df_filtrado['valor'].str.replace(',', '.',regex = False)
@@ -25,6 +25,7 @@ df_filtrado['valor'] = df_filtrado['valor'].astype(float)
 df_filtrado['data'] = pd.to_datetime(df_filtrado['data'],format="%d/%m/%Y")
 df_filtrado['data'] = df_filtrado['data'].ffill()
 df_filtrado['objeto'] = df_filtrado['objeto'].ffill()
+df_filtrado['codigo'] = df_filtrado['codigo'].ffill()
 df_filtrado = fg.normalizar_texto(df_filtrado,'objeto')
 df_filtrado = fg.normalizar_texto(df_filtrado,'nome',MAPEAMENTO_NOMES)
 df_empresas = pd.DataFrame(df_filtrado['nome'].unique(), columns=['nome'])
@@ -44,7 +45,7 @@ if nao_casaram:
     for nome in nao_casaram:
         print(f'  - {nome}')
 df_concatenado = df_concatenado.rename(columns={'id' : 'fornecedor_id','segmento' : 'segmento_id'})
-colunas_para_manter_concatenado = ['data', 'objeto', 'segmento_id','fornecedor_id','valor']
+colunas_para_manter_concatenado = ['codigo', 'data', 'objeto', 'segmento_id','fornecedor_id','valor']
 df_concatenado = df_concatenado[colunas_para_manter_concatenado]
 df_concatenado['segmento_id'] = None
 df_concatenado['fonte_id'] = 1

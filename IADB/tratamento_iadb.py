@@ -12,9 +12,9 @@ cursor = fg.get_cursor(connection)
 engine = fg.get_engine()
 df = fg.get_arquivo_recente('IADB')
 
-colunas_para_manter = ['Award Date', 'Contract Description', 'Vendor', 'Contract Amount']
+colunas_para_manter = ['Award ID', 'Award Date', 'Contract Description', 'Vendor', 'Contract Amount']
 df_filtrado = df[colunas_para_manter]
-mapeamento = {'Award Date' : 'data', 'Contract Description' : 'objeto', 'Vendor' : 'nome', 'Contract Amount' : 'valor'}
+mapeamento = {'Award ID' : 'codigo', 'Award Date' : 'data', 'Contract Description' : 'objeto', 'Vendor' : 'nome', 'Contract Amount' : 'valor'}
 df_filtrado = df_filtrado.rename(columns = mapeamento)
 df_filtrado['valor'] = df_filtrado['valor'].astype(float)
 df_filtrado['data'] = pd.to_datetime(df_filtrado['data'],format="%d/%m/%Y")
@@ -44,7 +44,7 @@ if nao_casaram:
         print(f'  - {nome}')
 
 df_concatenado = df_concatenado.rename(columns={'id' : 'fornecedor_id','segmento' : 'segmento_id'})
-colunas_para_manter_concatenado = ['data', 'objeto', 'segmento_id','fornecedor_id','valor']
+colunas_para_manter_concatenado = ['codigo','data', 'objeto', 'segmento_id','fornecedor_id','valor']
 df_concatenado = df_concatenado[colunas_para_manter_concatenado]
 df_concatenado['segmento_id'] = None
 df_concatenado['fonte_id'] = 2

@@ -122,18 +122,31 @@ def load_fornecedores_table(connection, cursor, df):
 
 def load_contratos_table(connection, cursor,df):
     cursor.execute("SELECT 1 FROM pg_constraint WHERE conname = 'contratos_unicos'")
-    if cursor.fetchone() is None:
-        cursor.execute(
-            "ALTER TABLE contratos ADD CONSTRAINT contratos_unicos UNIQUE (fornecedor_id, data, valor, objeto)"
-        )
+    if cursor.fetchone() is not None:
+        cursor.execute("ALTER TABLE contratos DROP CONSTRAINT contratos_unicos")
         connection.commit()
+
+    chave = ['codigo', 'fornecedor_id', 'fonte_id']
+    #remove reexportacoes identicas (mesma linha duplicada na fonte) antes de somar,
+    #senao valores repetidos seriam contados mais de uma vez.
+    df = df.drop_duplicates(subset=chave + ['data', 'objeto', 'valor'])
+    #uma mesma empresa pode aparecer mais de uma vez no mesmo contrato (ex.: consorcio
+    #cujos nomes-variantes foram unificados pelo MAPEAMENTO_NOMES) com valores parciais
+    #distintos; somamos em vez de descartar para nao perder valor real do contrato.
+    df = df.groupby(chave, as_index=False, dropna=False).agg({
+        'data': 'first',
+        'objeto': 'first',
+        'segmento_id': 'first',
+        'valor': 'sum',
+    })
 
     try:
         i = 1
         for _, linha in df.iterrows():
             cursor.execute(
-                "INSERT INTO contratos (data, objeto, segmento_id, fornecedor_id, valor, fonte_id) VALUES (%s, %s, %s, %s, %s, %s) ON CONFLICT (fornecedor_id, data, valor, objeto) DO NOTHING",
+                "INSERT INTO contratos (codigo, data, objeto, segmento_id, fornecedor_id, valor, fonte_id) VALUES (%s, %s, %s, %s, %s, %s, %s) ON CONFLICT (codigo, fornecedor_id, fonte_id) DO NOTHING",
                 (
+                    linha['codigo'],
                     linha['data'],
                     linha['objeto'],
                     None if pd.isna(linha['segmento_id']) else linha['segmento_id'],
@@ -162,7 +175,7 @@ def get_arquivo_recente(fonte):
         reader = pd.read_csv
         extension = '.csv'
     elif fonte.upper() == 'ONU':
-        pattern = '../ONU/dados/contratos_bndes_V*.csv'
+        pattern = '../ONU/dados/contratos_onu_V*.csv'
         reader = pd.read_csv
         extension = '.csv'
     elif fonte.upper() == 'IADB':

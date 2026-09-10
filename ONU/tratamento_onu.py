@@ -12,10 +12,10 @@ cursor = fg.get_cursor(connection)
 engine = fg.get_engine()
 
 df = fg.get_arquivo_recente('ONU')
-colunas_para_manter = ['objeto', 'nome', 'data', 'valor']
+colunas_para_manter = ['codigo', 'objeto', 'nome', 'data', 'valor']
 df_filtrado = df[colunas_para_manter]
 df_filtrado['valor'] = df_filtrado['valor'].astype(float)
-df_filtrado['data'] = pd.to_datetime(df_filtrado['data'], format="%d-%b-%Y")
+df_filtrado['data'] = pd.to_datetime(df_filtrado['data'], format="%d-%b-%y")
 df_filtrado = fg.normalizar_texto(df_filtrado,'objeto',)
 df_filtrado = fg.normalizar_texto(df_filtrado,'nome', MAPEAMENTO_NOMES)
 df_filtrado['segmento'] = None
@@ -44,7 +44,7 @@ if nao_casaram:
         print(f'  - {nome}')
 
 df_concatenado = df_concatenado.rename(columns={'id' : 'fornecedor_id','segmento' : 'segmento_id'})
-colunas_para_manter_concatenado = ['data', 'objeto', 'segmento_id','fornecedor_id','valor']
+colunas_para_manter_concatenado = ['codigo', 'data', 'objeto', 'segmento_id','fornecedor_id','valor']
 df_concatenado = df_concatenado[colunas_para_manter_concatenado]
 df_concatenado['segmento_id'] = None
 df_concatenado['fonte_id'] = 3

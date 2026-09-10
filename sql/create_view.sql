@@ -4,7 +4,7 @@ SELECT
     f.nome,
     f.contato,
     e.nome AS especialidade,
-    COUNT(c.id) AS num_contratos,
+    COUNT(c.codigo) AS num_contratos,
     COALESCE(SUM(c.valor), 0) AS valor_total,
     COALESCE(AVG(c.valor), 0) AS valor_medio
 FROM fornecedores f
